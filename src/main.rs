@@ -8,13 +8,17 @@ struct Cli {
     path: std::path::PathBuf,
 }
 
-fn main() {
+#[derive(Debug)]
+struct CustomError(String);
+
+fn main() -> Result<(), CustomError> {
     let args = Cli::from_args();
     let content = std::fs::read_to_string(&args.path)
-        .expect("could not read file");
+        .map_err(|err| CustomError(format!("Error reading `{:?}`: {}", &args.path, err)))?;
     for line in content.lines() {
         if line.contains(&args.pattern) {
             println!("{}", line);
         }
     }
+    Ok(())
 }
