@@ -12,16 +12,27 @@ struct Cli {
     path: std::path::PathBuf,
 }
 
+fn find_matches(content: &str, pattern: &str, mut writer: impl Write) {
+    for line in content.lines() {
+        if line.contains(pattern) {
+            writeln!(writer, "{}", line);
+        }
+    }
+}
+
 fn main() -> Result<(), ExitFailure> {
     let args = Cli::from_args();
     let content = std::fs::read_to_string(&args.path)
         .with_context(|_| format!("could not read file {:?}", &args.path))?;
     let stdout = io::stdout();
-    let mut handle = io::BufWriter::new(stdout);
-    for line in content.lines() {
-        if line.contains(&args.pattern) {
-            writeln!(handle, "{}", line);
-        }
-    }
+    let handle = io::BufWriter::new(stdout);
+    find_matches(content.as_str(), &args.pattern, handle);
     Ok(())
+}
+
+#[test]
+fn find_a_match() {
+    let mut result = Vec::new();
+    find_matches("lorem ipsum\ndolor sit amet", "lorem", &mut result);
+    assert_eq!(result, b"lorem ipsum\n");
 }
