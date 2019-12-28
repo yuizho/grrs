@@ -12,12 +12,13 @@ struct Cli {
     path: std::path::PathBuf,
 }
 
-fn find_matches(content: &str, pattern: &str, mut writer: impl Write) {
+fn find_matches(content: &str, pattern: &str, mut writer: impl Write) -> Result<(), Box<std::error::Error>> {
     for line in content.lines() {
         if line.contains(pattern) {
-            writeln!(writer, "{}", line);
+            writeln!(writer, "{}", line)?;
         }
     }
+    Ok(())
 }
 
 fn main() -> Result<(), ExitFailure> {
