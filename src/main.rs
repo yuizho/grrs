@@ -34,6 +34,8 @@ fn main() -> Result<(), ExitFailure> {
 #[test]
 fn find_a_match() {
     let mut result = Vec::new();
+    // https://doc.rust-lang.org/std/io/trait.Write.html#implementors
+    // Vec<u8>のimplemenが存在するので、Vec<u8>として推論されて、mut writer: impl Writeへ設定される
     find_matches("lorem ipsum\ndolor sit amet", "lorem", &mut result);
     assert_eq!(result, b"lorem ipsum\n");
 }
